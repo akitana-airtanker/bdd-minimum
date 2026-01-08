@@ -1,0 +1,11 @@
+{
+  "name": "bdd-minimal-js",
+  "version": "1.0.0",
+  "description": "Minimal BDD example with Cucumber.js",
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.0.0"
+  }
+}
