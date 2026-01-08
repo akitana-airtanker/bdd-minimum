@@ -1,42 +1,59 @@
 # BDD Minimum - 最小構成で理解するBDD
 
-BDD（Behavior-Driven Development）の**最小構成**を示すリポジトリです。
+**実際のアプリケーションコード**をBDDでテストする最小構成サンプルです。
 
-## なぜこのリポジトリを作ったか？
+## このリポジトリのポイント
 
-[behave.example](https://github.com/behave/behave.example) や [cucumber-js](https://github.com/cucumber/cucumber-js) のサンプルを見ると、ファイル数が多く複雑に感じます。
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Feature File (仕様)                                        │
+│  「5を足して3を足したら8になる」                              │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ マッピング
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Step Definitions (グルーコード)                             │
+│  from src.calculator import Calculator                      │
+│  calculator.add(5)                                          │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ テスト
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│  src/ (アプリケーションコード) ← これがテスト対象            │
+│  class Calculator:                                          │
+│      def add(self, value): ...                              │
+└─────────────────────────────────────────────────────────────┘
+```
 
-**しかし、BDDの本質は非常にシンプルです。**
-
-| リポジトリ | BDDコード | その他（ドキュメント/CI/インフラ） |
-|-----------|---------|--------------------------------|
-| behave.example | ~5% | ~95% |
-| cucumber-js | ~10% | ~90% |
-| **このリポジトリ** | **100%** | **0%** |
+**BDDは `src/` のアプリケーションコードの振る舞いをテストします。**
 
 ---
 
-## 最小構成
+## ディレクトリ構成
 
-### Python (Behave) - 2ファイル
+### Python (Behave)
 
 ```
 python/
+├── src/                          # アプリケーションコード
+│   └── calculator.py             # ← テスト対象
 ├── features/
-│   ├── greeting.feature      # Gherkin仕様
+│   ├── calculator.feature        # 振る舞いの仕様
 │   └── steps/
-│       └── greeting_steps.py # ステップ定義
+│       └── calculator_steps.py   # src/をテストするコード
 ```
 
-### JavaScript (Cucumber.js) - 3ファイル
+### JavaScript (Cucumber.js)
 
 ```
 javascript/
+├── src/                          # アプリケーションコード
+│   └── calculator.js             # ← テスト対象
 ├── features/
-│   ├── greeting.feature      # Gherkin仕様
+│   ├── calculator.feature        # 振る舞いの仕様
 │   └── support/
-│       └── steps.js          # ステップ定義
-└── package.json              # 依存関係
+│       └── steps.js              # src/をテストするコード
+└── package.json
 ```
 
 ---
@@ -61,33 +78,73 @@ npm test
 
 ---
 
-## 学習パス
+## Feature ファイル（仕様）
 
-[docs/learning-path.md](docs/learning-path.md) で、Layer 0（最小構成）から Layer 4（CI/CD統合）までの段階的な学習パスを解説しています。
+Python/JavaScript共通で同じGherkin形式を使用：
 
-| Layer | 内容 | 必要になるとき |
-|-------|------|--------------|
-| Layer 0 | Feature + Steps | **常に必要** |
-| Layer 1 | 設定ファイル, Tags | シナリオ5個以上 |
-| Layer 2 | Hooks (Before/After) | セットアップの重複 |
-| Layer 3 | Scenario Outlines | データ駆動テスト |
-| Layer 4 | CI/CD, レポート | チーム開発 |
+```gherkin
+Feature: Calculator
+  Scenario: Add two numbers
+    Given the calculator is cleared
+    When I add 5
+    And I add 3
+    Then the result should be 8
+```
+
+これが「人間が読める仕様書」であり、同時に「実行可能なテスト」です。
 
 ---
 
-## BDDとは
+## アプリケーションコード（テスト対象）
 
-**Behavior-Driven Development** は、システムの振る舞いを自然言語で記述し、それをそのまま実行可能なテストにするアプローチです。
+### Python (`src/calculator.py`)
 
-```gherkin
-Feature: Greeting
-  Scenario: Simple greeting
-    Given I have a greeter
-    When I ask for a greeting
-    Then I should receive "Hello, World!"
+```python
+class Calculator:
+    def __init__(self):
+        self.result = 0
+
+    def add(self, value):
+        self.result += value
+        return self.result
 ```
 
-この「Given/When/Then」形式は、非エンジニアでも読める仕様書として機能します。
+### JavaScript (`src/calculator.js`)
+
+```javascript
+class Calculator {
+  constructor() {
+    this.result = 0;
+  }
+
+  add(value) {
+    this.result += value;
+    return this.result;
+  }
+}
+```
+
+---
+
+## なぜサンプルリポジトリは複雑に見えるのか？
+
+[behave.example](https://github.com/behave/behave.example) などが複雑に見える理由：
+
+| 要素 | このリポジトリ | behave.example |
+|------|--------------|----------------|
+| アプリケーションコード | `src/calculator.py` | なし（デモ用） |
+| Feature + Steps | あり | あり |
+| ドキュメント生成 | なし | Sphinx（大量） |
+| CI/CD | なし | あり |
+| 複数チュートリアル | なし | 12個 |
+
+**結論:** BDDの本質は「src/ + features/ + steps/」の3層構造。それ以外はオプション。
+
+---
+
+## 学習パス
+
+[docs/learning-path.md](docs/learning-path.md) で段階的な学習パス（Layer 0-4）を解説しています。
 
 ---
 

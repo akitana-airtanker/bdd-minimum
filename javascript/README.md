@@ -1,17 +1,45 @@
 # BDD Minimal Example - JavaScript (Cucumber.js)
 
-Cucumber.jsを使用した最小構成のBDDサンプルです。**3ファイルのみ**で動作します。
+Cucumber.jsを使用して**実際のアプリケーションコード**をBDDでテストする最小構成サンプルです。
 
 ## ディレクトリ構成
 
 ```
 javascript/
+├── src/                          # アプリケーションコード（テスト対象）
+│   └── calculator.js             # Calculatorクラス
 ├── features/
-│   ├── greeting.feature      # Gherkin形式の仕様
+│   ├── calculator.feature        # Gherkin形式の仕様
 │   └── support/
-│       └── steps.js          # ステップ定義
-├── package.json              # 依存関係
+│       └── steps.js              # src/をテストするステップ定義
+├── package.json
 └── README.md
+```
+
+## ポイント
+
+**BDDでテストしているのは `src/calculator.js` です。**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  calculator.feature (仕様)                                  │
+│  「5を足して3を足したら8になる」                              │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ マッピング
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│  steps.js (ステップ定義)                                     │
+│  const { Calculator } = require('../../src/calculator');    │
+│  this.calculator.add(5);                                    │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ テスト
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│  src/calculator.js (アプリケーションコード)                   │
+│  class Calculator {                                         │
+│      add(value) { ... }                                     │
+│  }                                                          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## セットアップ
@@ -30,19 +58,29 @@ npm test
 ## 期待される出力
 
 ```
-Feature: Greeting # features/greeting.feature:1
+Feature: Calculator # features/calculator.feature:1
 
-  Scenario: Simple greeting               # features/greeting.feature:6
-    Given I have a greeter                # features/support/steps.js:4
-    When I ask for a greeting             # features/support/steps.js:8
-    Then I should receive "Hello, World!" # features/support/steps.js:12
+  Scenario: Add two numbers          # features/calculator.feature:6
+    Given the calculator is cleared  # features/support/steps.js:12
+    When I add 5                     # features/support/steps.js:17
+    And I add 3                      # features/support/steps.js:17
+    Then the result should be 8      # features/support/steps.js:32
 
-1 scenario (1 passed)
-3 steps (3 passed)
+  Scenario: Subtract from a number   # features/calculator.feature:12
+    ...
+
+  Scenario: Multiple operations      # features/calculator.feature:18
+    ...
+
+3 scenarios (3 passed)
+12 steps (12 passed)
 ```
 
-## ポイント
+## ファイルの役割
 
-- **設定ファイル不要**: `cucumber.js` なしで動作
-- **最小ファイル数**: feature + steps + package.json の3ファイルのみ
-- **自動検出**: `features/` ディレクトリを自動で認識
+| ファイル | 役割 |
+|---------|------|
+| `src/calculator.js` | **テスト対象**のアプリケーションコード |
+| `features/calculator.feature` | 振る舞いの仕様（人間が読める形式） |
+| `features/support/steps.js` | 仕様とコードを繋ぐグルーコード |
+| `package.json` | 依存関係（@cucumber/cucumber） |
