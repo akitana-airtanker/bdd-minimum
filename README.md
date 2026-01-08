@@ -2,22 +2,26 @@
 
 **BDDとTDDの棲み分け**を示す最小構成サンプルです。
 
-## BDD vs TDD の棲み分け
+## BDD → OpenSpec → TDD の3層フロー
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  BDD (features/)                                            │
-│  - ビジネス要件の受け入れテスト                               │
-│  - ステークホルダーが読める                                   │
-│  - 少数のシナリオ（3-5個）                                    │
+│  「何をすべきか」- ビジネス振る舞い                          │
+│  - ステークホルダーが読める仕様書                            │
 │  - 例: "ゴールド会員は20%割引を受ける"                        │
 └─────────────────────────────────────────────────────────────┘
-                              ↓ 補完
+                              ↓ 変換・参照
+┌─────────────────────────────────────────────────────────────┐
+│  OpenSpec (openspec/)                                       │
+│  「どう実装するか合意」- AI向け技術仕様                      │
+│  - proposal.md, tasks.md, specs/                            │
+│  - AIコーディングアシスタントとの合意形成                    │
+└─────────────────────────────────────────────────────────────┘
+                              ↓ 実装・検証
 ┌─────────────────────────────────────────────────────────────┐
 │  TDD (tests/)                                               │
-│  - 実装の詳細・エッジケース                                   │
-│  - 開発者向け                                                │
-│  - 多数のテスト（10-20個）                                    │
+│  「実装を検証」- エッジケース・境界値                        │
 │  - 例: "未知のランクはデフォルト0%", "端数は切り捨て"          │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -35,6 +39,13 @@ bdd-minimum/
 │   │   ├── membership_discount.feature
 │   │   └── steps/
 │   │       └── discount_steps.py
+│   ├── openspec/                    # OpenSpec（技術仕様）
+│   │   ├── project.md
+│   │   ├── AGENTS.md
+│   │   ├── specs/
+│   │   │   └── discount.md
+│   │   └── changes/
+│   │       └── add-platinum-tier/   # 学習用サンプル
 │   └── tests/                       # TDD（ユニットテスト）
 │       └── test_discount.py
 ├── javascript/
@@ -46,6 +57,7 @@ bdd-minimum/
 │   │       └── steps.js
 │   └── tests/
 │       └── discount.test.js
+├── LLM-GUIDE.md                     # LLM参照用ガイド
 └── README.md
 ```
 
@@ -107,15 +119,15 @@ def test_unknown_rank_defaults_to_no_discount():
 
 ---
 
-## BDD/TDD の使い分け
+## 3層の使い分け
 
-| 観点 | BDD | TDD |
-|------|-----|-----|
-| 対象者 | ステークホルダー | 開発者 |
-| 記述 | Gherkin（自然言語） | コード |
-| テスト数 | 少数（3-5） | 多数（10-20） |
-| カバー範囲 | ハッピーパス | エッジケース |
-| 例 | "Gold会員は20%割引" | "未知ランクは0%", "端数切り捨て" |
+| 観点 | BDD | OpenSpec | TDD |
+|------|-----|----------|-----|
+| 役割 | 何をすべきか | どう実装するか | 実装を検証 |
+| 対象者 | ステークホルダー | 開発者・AI | 開発者 |
+| 記述 | Gherkin | Markdown | コード |
+| テスト数 | 少数（3-5） | - | 多数（10-20） |
+| 例 | "Gold会員は20%割引" | API契約、タスク分解 | "端数切り捨て" |
 
 ---
 
@@ -125,6 +137,7 @@ def test_unknown_rank_defaults_to_no_discount():
 - [Cucumber.js Documentation](https://cucumber.io/docs/cucumber/)
 - [pytest Documentation](https://docs.pytest.org/)
 - [Jest Documentation](https://jestjs.io/)
+- [OpenSpec (Fission AI)](https://github.com/fission-ai/openspec)
 
 ---
 

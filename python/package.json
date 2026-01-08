@@ -1,0 +1,10 @@
+{
+  "name": "bdd-minimum-python",
+  "private": true,
+  "devDependencies": {
+    "@fission-ai/openspec": "^0.12.0"
+  },
+  "scripts": {
+    "openspec": "openspec"
+  }
+}
