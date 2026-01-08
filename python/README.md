@@ -1,85 +1,45 @@
-# BDD Minimal Example - Python (Behave)
+# BDD + TDD Minimal Example - Python
 
-Behaveを使用して**実際のアプリケーションコード**をBDDでテストする最小構成サンプルです。
+Behave + pytest を使用した**BDDとTDDの棲み分け**サンプルです。
 
 ## ディレクトリ構成
 
 ```
 python/
-├── src/                          # アプリケーションコード（テスト対象）
-│   ├── __init__.py
-│   └── calculator.py             # Calculatorクラス
-├── features/
-│   ├── calculator.feature        # Gherkin形式の仕様
+├── src/
+│   └── discount.py              # アプリケーションコード
+├── features/                    # BDD（受け入れテスト）
+│   ├── membership_discount.feature
 │   └── steps/
-│       └── calculator_steps.py   # src/をテストするステップ定義
-└── README.md
-```
-
-## ポイント
-
-**BDDでテストしているのは `src/calculator.py` です。**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  calculator.feature (仕様)                                  │
-│  「5を足して3を足したら8になる」                              │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ マッピング
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│  calculator_steps.py (ステップ定義)                          │
-│  from src.calculator import Calculator                      │
-│  context.calculator.add(5)                                  │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ テスト
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│  src/calculator.py (アプリケーションコード)                   │
-│  class Calculator:                                          │
-│      def add(self, value): ...                              │
-└─────────────────────────────────────────────────────────────┘
+│       └── discount_steps.py
+└── tests/                       # TDD（ユニットテスト）
+    └── test_discount.py
 ```
 
 ## セットアップ
 
 ```bash
-pip install behave
+pip install behave pytest
 ```
 
 ## 実行
 
 ```bash
-cd python
+# BDD（受け入れテスト）
 behave
+
+# TDD（ユニットテスト）
+pytest
+
+# 両方実行
+behave && pytest
 ```
 
-## 期待される出力
+## BDD vs TDD
 
-```
-Feature: Calculator # features/calculator.feature:1
-
-  Scenario: Add two numbers          # features/calculator.feature:6
-    Given the calculator is cleared  # features/steps/calculator_steps.py:16
-    When I add 5                     # features/steps/calculator_steps.py:22
-    And I add 3                      # features/steps/calculator_steps.py:22
-    Then the result should be 8      # features/steps/calculator_steps.py:40
-
-  Scenario: Subtract from a number   # features/calculator.feature:12
-    ...
-
-  Scenario: Multiple operations      # features/calculator.feature:18
-    ...
-
-3 features passed, 0 failed, 0 skipped
-3 scenarios passed, 0 failed, 0 skipped
-12 steps passed, 0 failed, 0 skipped
-```
-
-## ファイルの役割
-
-| ファイル | 役割 |
-|---------|------|
-| `src/calculator.py` | **テスト対象**のアプリケーションコード |
-| `features/calculator.feature` | 振る舞いの仕様（人間が読める形式） |
-| `features/steps/calculator_steps.py` | 仕様とコードを繋ぐグルーコード |
+| | BDD (features/) | TDD (tests/) |
+|---|---|---|
+| ツール | Behave | pytest |
+| 対象者 | ステークホルダー | 開発者 |
+| テスト数 | 3シナリオ | 6+テスト |
+| 例 | "Gold会員は20%割引" | "端数は切り捨て" |

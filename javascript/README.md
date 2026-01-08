@@ -1,86 +1,45 @@
-# BDD Minimal Example - JavaScript (Cucumber.js)
+# BDD + TDD Minimal Example - JavaScript
 
-Cucumber.jsを使用して**実際のアプリケーションコード**をBDDでテストする最小構成サンプルです。
+Cucumber.js + Jest を使用した**BDDとTDDの棲み分け**サンプルです。
 
 ## ディレクトリ構成
 
 ```
 javascript/
-├── src/                          # アプリケーションコード（テスト対象）
-│   └── calculator.js             # Calculatorクラス
-├── features/
-│   ├── calculator.feature        # Gherkin形式の仕様
+├── src/
+│   └── discount.js              # アプリケーションコード
+├── features/                    # BDD（受け入れテスト）
+│   ├── membership_discount.feature
 │   └── support/
-│       └── steps.js              # src/をテストするステップ定義
-├── package.json
-└── README.md
-```
-
-## ポイント
-
-**BDDでテストしているのは `src/calculator.js` です。**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  calculator.feature (仕様)                                  │
-│  「5を足して3を足したら8になる」                              │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ マッピング
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│  steps.js (ステップ定義)                                     │
-│  const { Calculator } = require('../../src/calculator');    │
-│  this.calculator.add(5);                                    │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ テスト
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│  src/calculator.js (アプリケーションコード)                   │
-│  class Calculator {                                         │
-│      add(value) { ... }                                     │
-│  }                                                          │
-└─────────────────────────────────────────────────────────────┘
+│       └── steps.js
+└── tests/                       # TDD（ユニットテスト）
+    └── discount.test.js
 ```
 
 ## セットアップ
 
 ```bash
-cd javascript
 npm install
 ```
 
 ## 実行
 
 ```bash
+# BDD（受け入れテスト）
 npm test
+
+# TDD（ユニットテスト）
+npm run test:unit
+
+# 両方実行
+npm run test:all
 ```
 
-## 期待される出力
+## BDD vs TDD
 
-```
-Feature: Calculator # features/calculator.feature:1
-
-  Scenario: Add two numbers          # features/calculator.feature:6
-    Given the calculator is cleared  # features/support/steps.js:12
-    When I add 5                     # features/support/steps.js:17
-    And I add 3                      # features/support/steps.js:17
-    Then the result should be 8      # features/support/steps.js:32
-
-  Scenario: Subtract from a number   # features/calculator.feature:12
-    ...
-
-  Scenario: Multiple operations      # features/calculator.feature:18
-    ...
-
-3 scenarios (3 passed)
-12 steps (12 passed)
-```
-
-## ファイルの役割
-
-| ファイル | 役割 |
-|---------|------|
-| `src/calculator.js` | **テスト対象**のアプリケーションコード |
-| `features/calculator.feature` | 振る舞いの仕様（人間が読める形式） |
-| `features/support/steps.js` | 仕様とコードを繋ぐグルーコード |
-| `package.json` | 依存関係（@cucumber/cucumber） |
+| | BDD (features/) | TDD (tests/) |
+|---|---|---|
+| ツール | Cucumber.js | Jest |
+| 対象者 | ステークホルダー | 開発者 |
+| テスト数 | 3シナリオ | 6+テスト |
+| 例 | "Gold会員は20%割引" | "端数は切り捨て" |

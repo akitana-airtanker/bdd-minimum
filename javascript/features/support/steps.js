@@ -1,36 +1,25 @@
 /**
- * BDDステップ定義
+ * BDD Step Definitions for Membership Discount
  *
- * このファイルは src/calculator.js をインポートしてテストします。
- * Featureファイルの各ステップ（Given/When/Then）がここのコードに対応します。
+ * Featureファイルの各ステップをsrc/discount.jsに接続する。
  */
 
 const assert = require('assert');
 const { Given, When, Then } = require('@cucumber/cucumber');
-const { Calculator } = require('../../src/calculator'); // ← アプリケーションコードをインポート
+const { MembershipDiscount } = require('../../src/discount');
 
-Given('the calculator is cleared', function () {
-  // 実際のCalculatorクラスのインスタンスを作成
-  this.calculator = new Calculator();
+Given('a customer with {string} membership', function (rank) {
+  this.discount = new MembershipDiscount(rank);
 });
 
-When('I add {int}', function (number) {
-  // Calculatorクラスのaddメソッドを呼び出す
-  this.calculator.add(number);
+When('they purchase an item for {int} yen', function (price) {
+  this.finalPrice = this.discount.calculatePrice(price);
 });
 
-When('I subtract {int}', function (number) {
-  // Calculatorクラスのsubtractメソッドを呼び出す
-  this.calculator.subtract(number);
-});
-
-When('I multiply by {int}', function (number) {
-  // Calculatorクラスのmultiplyメソッドを呼び出す
-  this.calculator.multiply(number);
-});
-
-Then('the result should be {int}', function (expected) {
-  // Calculatorクラスのresultプロパティを検証
-  const actual = this.calculator.result;
-  assert.strictEqual(actual, expected, `Expected ${expected}, but got ${actual}`);
+Then('the discounted price should be {int} yen', function (expected) {
+  assert.strictEqual(
+    this.finalPrice,
+    expected,
+    `Expected ${expected}, but got ${this.finalPrice}`
+  );
 });
